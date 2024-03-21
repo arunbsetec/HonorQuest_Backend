@@ -1,9 +1,0 @@
-{"name":"#18",
-"description":"#18 Dragon",
-"image":"dragons.jpg",
-"external_url":"http://localhost:3000/api/item/meta",
-"attributes":[{"trait_type":"Character","value":"Dragon"},
-	{"trait_type":"Squires Level","value":"0"},
-	{"trait_type":"Coffers Level","value":"0"},
-	{"trait_type":"Horse Level","value":"0"},
-	{"trait_type":"Dragon Level","value":"4"}]}
