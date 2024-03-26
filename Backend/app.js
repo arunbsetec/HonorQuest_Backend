@@ -9,7 +9,7 @@ const stakingRoutes = require('./Router/staking');
 const activityRoutes = require('./Router/activity')
 const { stake } = require('./controller/userControl');
 const path = require('path');
-const{L1ContractConnection,L2ContractConnection,L1Gen1ContractConnection}= require('./controller/streamController')
+const{L1ContractConnection,L2ContractConnection}= require('./controller/streamController')
 const {getPendingTranscation,pendingTxNonce} = require('./controller/queueController')
 var cors = require('cors');
 
@@ -32,7 +32,6 @@ mongoose.connect(config.db)
 
 L1ContractConnection();
 L2ContractConnection();
-L1Gen1ContractConnection();
 pendingTxNonce();
 
 cron.schedule("*/10 * * * * *", () => {

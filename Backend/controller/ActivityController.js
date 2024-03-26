@@ -28,6 +28,20 @@ const vaultUnstack = async(req,res) =>{
     }
 }
 
+const claimReward = async(req,res) =>{
+    try{
+        const {address,reward,type} = req.body;
+        const activity = new Activity({publicKey:address,type:type,Message:`Reward Amount ${reward}Horn withdraw Successfully`})
+        await activity.save();
+        console.log(Activity,"=============Claim Reward")
+        return res.status(200).json({status:true,data:activity});
+    }
+    catch(e){
+        console.log(e,"+==========error")
+        return res.status(500).json({status:false,message:`vault Unstack : ${e}`})
+    }
+}
+
 const getAllActivity = async (req,res) =>{
     try{
         const id = req.params.id;
@@ -57,5 +71,6 @@ module.exports={
     vaultStack,
     vaultUnstack,
     getAllActivity,
-    getIdActivity
+    getIdActivity,
+    claimReward
 }

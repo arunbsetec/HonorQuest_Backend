@@ -8,7 +8,8 @@ const L1Vaultabi = require("../abi/L1/Vault.json");
 const config = require('../config');
 const blockchainUtils = require("../helper/blockchainUtils")
 const helper = require('../helper/eventhelper')
-const queueController = require('../controller/queueController')
+const queueController = require('../controller/queueController');
+const { UndefinedRawTransactionError } = require('web3');
 
 const stake = async (req, res) => {
   try {
@@ -168,6 +169,49 @@ const gen0Signature = async(req,res) =>{
   }
 }
 
+const gen1Signature = async(req,res) =>{
+  try{
+    const {address,quantity} = req.body;
+    console.log(req.body,"=========req.body")
+    if(address == null || address == "" || address == undefined){
+      return res.status(400).json({status:false,message:"Address is required"})
+    }
+    if(quantity <= 0){
+      return res.status(400).json({status:false,message:"Quantity Must be greater than 0"})
+    }
+    const result = await blockchainUtils.gen1Signature(address,quantity)
+    console.log(result,"===========result")
+    return res.status(200).json({status:true,message:result})
+  }
+  catch(error){
+    console.log("error:",error)
+    return res.status(500).json({status:false,message:error})
+  }
+}
+
+const claimRewardSignature = async(req,res) =>{
+  try{
+    const {address} = req.body;
+    console.log(req.body,"++++++++++++++req.body")
+    if(address ==null || address == undefined || address == ""){
+      return res.status(400).json({status:false,message:"Address is required"})
+    }
+    const reward = await helper.currentReward(address);
+    console.log(reward.toString(),"=============reward");
+    const claimreward = await blockchainUtils.claimSignature(address,ethers.utils.parseEther(reward.toString()));
+    console.log(claimreward,"===================claimreward");
+    const message = {
+      claimreward: claimreward,
+      reward: ethers.utils.formatEther(reward)
+    }
+    return res.status(200).json({status:true,message:message})
+  }
+  catch(err){
+    console.log(err,"==============error");
+    return res.status(500).json({status:false,error:err});
+  }
+}
+
 
 const claimQuestReward = async(req,res) =>{
   try{
@@ -253,8 +297,10 @@ module.exports = {
   getmintedtokens,
   getNFTtokenUri,
   gen0Signature,
+  gen1Signature,
   claimQuestReward,
   TrainingStack,
-  TrainingUnstack
+  TrainingUnstack,
+  claimRewardSignature
 };
 

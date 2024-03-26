@@ -3,6 +3,25 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      }
+    ],
+    "name": "Deposite",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "previousOwner",
@@ -235,6 +254,24 @@
         "internalType": "address",
         "name": "user",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "reward",
+        "type": "uint256"
+      }
+    ],
+    "name": "depositeReward",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
       }
     ],
     "name": "getStakedDetails",
@@ -382,6 +419,19 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "resetClaimReward",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

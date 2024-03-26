@@ -7,8 +7,10 @@ router.post('/unstake', userStaking.unstake);
 router.get('/mintedtokens/:address',userStaking.getmintedtokens);
 router.get('/tokenuri/:tokenId',userStaking.getNFTtokenUri);
 router.post('/gen0Signature',userStaking.gen0Signature);
+router.post('/gen1Signature',userStaking.gen1Signature);
 router.post('/claimQuestReward',userStaking.claimQuestReward)
 router.post('/trainingstack',userStaking.TrainingStack)
 router.post('/trainingunstack',userStaking.TrainingUnstack)
+router.post('/claimSignature',userStaking.claimRewardSignature)
 
 module.exports = router;

@@ -8,7 +8,7 @@ const QUeueModel =  mongoose.Schema({
     },
     type:{
         type:String,
-        enum:['Mint','Price','Stake','Unstake','trainingStake','trainingUnstake']
+        enum:['Mint','Price','Stake','Unstake','trainingStake','trainingUnstake','claimed','Transfer']
     },
     event_hash:{
         type:String

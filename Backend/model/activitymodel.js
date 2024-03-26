@@ -8,7 +8,7 @@ const ActivityModel =  mongoose.Schema({
     },
     type:{
         type:String,
-        enum:['Mint','Stack','Unstack','Vault','Unvault','Training','Untraining']
+        enum:['Mint','Stack','Unstack','Vault','Unvault','Training','Untraining','Deposite','Claim']
     },
     Message:{
         type:String

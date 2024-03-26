@@ -1,7 +1,7 @@
 const Queue = require('../model/queuemodel')
 const ethers = require('ethers');
 const config = require('../config')
-const { L2mint, questStack, questUnstack,trainingStack,trainingUnstack } = require('../helper/eventhelper')
+const { L2mint, questStack, questUnstack,trainingStack,resetReward, trainingUnstack,depositeToken } = require('../helper/eventhelper')
 
 async function getPendingTranscation() {
   try {
@@ -45,7 +45,15 @@ async function processTranscation(queue) {
     console.log("Training Unstack called ===============")
     trainingUnstack(trans.to, trans.tokenIds, trans.characters, pendingtransction,queue.nonce)
   }
-
+  else if(trans.type == "claimed"){
+    console.log("claimed stack is called============")
+    resetReward(trans.to);
+  }
+  else if(trans.type == "Transfer"){
+    console.log("Horn is called===========")
+    const token =await depositeToken(trans.from,trans.reward,queue.nonce)
+    console.log(token,"===========token")
+  }
 }
 
 async function pendingTxNonce() {

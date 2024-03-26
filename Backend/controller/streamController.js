@@ -2,7 +2,11 @@ const ethers = require('ethers');
 const gen0abi = require("../abi/L1/Gen0.json");
 const gen1abi = require("../abi/L1/Gen1.json");
 const NFTabi = require('../abi/L2/nft.json');
-const Queue = require('../model/queuemodel')
+const Queue = require('../model/queuemodel');
+const Claimabi = require('../abi/L1/Claim.json');
+const Hornabi = require('../abi/L1/Horn.json');
+const Questabi = require('../abi/L2/queststaking.json')
+
 require("dotenv").config()
 const config = require('../config')
 const EXPECTED_PONG_BACK = 15000;
@@ -56,6 +60,7 @@ const L1ContractConnection = () => {
     // startKeepAlive(provider);
     const contract = new ethers.Contract(config.Gen0, gen0abi, provider);
     contract.on("*", async (event) => {
+      console.log(event,"================event on gen0")
       if (event.event === "Mint") {
         const transactionHash = event.transactionHash;
         const to = event.args[0];
@@ -75,30 +80,11 @@ const L1ContractConnection = () => {
           tokenIds: tokenId
         };
         await sendqueue(params, transactionHash);
-      } else if (event.event === "Price") {
-        const price = event.args.toString();
-        const transactionHash = event.transactionHash;
-        let params = {
-          type: event.event
-        };
-        // await send(params,transactionHash)
-      }
+      } 
     });
-  });
-
-  provider._websocket.on('close', () => {
-    console.log('WebSocket connection closed, trying to reconnect...1111');
-    L1ContractConnection();
-  });
-};
-
-const L1Gen1ContractConnection = () => {
-  provider = new ethers.providers.WebSocketProvider(config.socketUrl);
-  console.log("alive================alive ===================alive=====1111")
-  provider.websocket.on('open', () => {
-    // startKeepAlive(provider);
-    const contract = new ethers.Contract(config.Gen1, gen1abi, provider);
-    contract.on("*", async (event) => {
+    const contractGen1 = new ethers.Contract(config.Gen1, gen1abi, provider);
+    contractGen1.on("*", async (event) => {
+      console.log(event,"================event on gen1")
       console.log(event,"===============event in the L1Gen1")
       if (event.event === "Mint") {
         const transactionHash = event.transactionHash;
@@ -119,31 +105,57 @@ const L1Gen1ContractConnection = () => {
           tokenIds: tokenId
         };
         await sendqueue(params, transactionHash);
-      } else if (event.event === "Price") {
-        const price = event.args.toString();
+      }
+    });
+    const contractClaim = new ethers.Contract(config.L1Claim, Claimabi, provider);
+    contractClaim.on("*", async (event) => {
+      if (event.event === "claimed") {
+        console.log(event,"================event on claim")
         const transactionHash = event.transactionHash;
+        const user = event.args[0];
+        const reward = Number(event.args[1].toString());
         let params = {
-          type: event.event
+          to: user,
+          type: event.event,
+          reward:reward
         };
-        // await send(params,transactionHash)
+        await sendqueue(params, transactionHash);
+      }
+    });
+    const contractHonr = new ethers.Contract(config.Horn, Hornabi, provider);
+    contractHonr.on("*", async (event) => {
+      console.log(event,"===========event in Honr")
+      if (event.event === "Transfer") {
+        const transactionHash = event.transactionHash;
+        const sender = event.args.from;
+        const receiver = event.args.to;
+        const reward = Number(event.args.value.toString());
+        let params = {
+          from: sender,
+          to: receiver,
+          type: event.event,
+          reward: reward
+        };
+        if(receiver == config.L1Vault){
+          await sendqueue(params, transactionHash);
+        }
       }
     });
   });
 
   provider._websocket.on('close', () => {
     console.log('WebSocket connection closed, trying to reconnect...1111');
-    L1Gen1ContractConnection();
+    L1ContractConnection();
   });
 };
+
 
 const L2ContractConnection = () => {
   provider = new ethers.providers.WebSocketProvider(config.socketUrl);
   console.log("alive================alive ===================alive=====22222")
   provider.websocket.on('open', () => {
     console.log("=================================came in L2 ")
-    // startKeepAlive(provider);
     const contract = new ethers.Contract(config.NFT, NFTabi, provider);
-    // console.log(contract,"====================l2 instace")
     contract.on("*", async (event) => {
       console.log(event,"============event ================================================================")
       if (event.event === "L2Mint") {
@@ -156,6 +168,20 @@ const L2ContractConnection = () => {
         console.log("TokenId:", tokenID);
         console.log("identifier:", identifier);
       }
+    });
+    const Questcontract = new ethers.Contract(config.QuestStake, Questabi, provider);
+    Questcontract.on("*", async (event) => {
+      console.log(event,"============event ================================================================")
+      // if (event.event === "L2Mint") {
+      //   const transactionHash = event.transactionHash;
+      //   const to = event.args[0];
+      //   const tokenID = ((event.args[1]).map((token) => { return token.toNumber()}));
+      //   const identifier = Number(event.args[2].toString());
+      //   console.log("event_hash", transactionHash);
+      //   console.log("Minted To:", to);
+      //   console.log("TokenId:", tokenID);
+      //   console.log("identifier:", identifier);
+      // }
     });
   });
 
@@ -189,5 +215,4 @@ async function sendqueue(params, transactionHash) {
 module.exports={
   L1ContractConnection,
   L2ContractConnection,
-  L1Gen1ContractConnection,
 }

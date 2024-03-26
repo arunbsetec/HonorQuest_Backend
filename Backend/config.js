@@ -16,3 +16,4 @@ exports.L1NFT=process.env.L1NFTContract_Address
 exports.L1Vault=process.env.L1VaultContract_Address
 exports.L1Registry=process.env.L1Registry_Address
 exports.L2Registry=process.env.L2Registry_Address
+exports.L1Claim=process.env.L1ClaimContract_Address
